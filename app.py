@@ -3,7 +3,7 @@ import tempfile
 import numpy as np
 import pandas as pd
 import streamlit as st
-import joblib
+# import joblib
 import os
 from moviepy.editor import VideoFileClip
 import speech_recognition as sr
