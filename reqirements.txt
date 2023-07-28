@@ -15,7 +15,7 @@ stanfordnlp
 transformers
 pydub
 SpeechRecognition
-moviepy
+moviepy==1.0.3
 nltk
 ffprobe
 ffmpeg
