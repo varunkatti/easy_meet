@@ -21,3 +21,4 @@ ffprobe
 ffmpeg
 AudioConverter
 joblib==1.0.1
+moviepy
