@@ -20,4 +20,4 @@ nltk
 ffprobe
 ffmpeg
 AudioConverter
-joblib
+joblib==1.0.1
