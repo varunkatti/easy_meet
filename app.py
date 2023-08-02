@@ -4,7 +4,6 @@ import speech_recognition as sr
 from pydub import AudioSegment
 from pydub.silence import split_on_silence
 from transformers import pipeline
-from googletrans import Translator
 
 def video_to_audio(input_video, output_audio):
     video = mp.VideoFileClip(input_video)
@@ -37,8 +36,8 @@ def get_large_audio_transcription(path, language='en-US'):
     return whole_text
 
 def generate_summary(text, max_length=150, min_length=50):
-    summarizer = pipeline("summarization", model="t5-small")
-    summarized = summarizer(text, min_length=min_length, max_length=max_length)
+    summarizer = pipeline("summarization", model="facebook/mbart-large-cc25")
+    summarized = summarizer(text, min_length=min_length, max_length=max_length, src_lang="hi_IN")
     return summarized[0]['summary_text']
 
 def main():
