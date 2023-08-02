@@ -41,15 +41,16 @@ def generate_summary(text, max_length=150, min_length=50):
     return summarized[0]['summary_text']
 
 def main():
-    st.title("Video to Audio & Summary App")
-    video = st.file_uploader("Upload a video", type=["mp4"])
-    button = st.button("Summarize")
+    st.title("🎬 Summary Generator📜")
+    st.write("Welcome! This is the Summary Generator. You can upload English, Hindi, or Kannada language videos to get a summary.")
+    video = st.file_uploader("📁 Upload a video", type=["mp4"])
+    button = st.button("🚀 Summarize")
 
     lang_options = {'English': 'en-US', 'Hindi': 'hi', 'Kannada': 'kn'}
-    selected_lang = st.sidebar.selectbox("Select Language", list(lang_options.keys()))
+    selected_lang = st.sidebar.selectbox("🌐 Select Language", list(lang_options.keys()))
 
-    max_length = st.sidebar.slider('Select max summary length', 50, 500, step=10, value=150)
-    min_length = st.sidebar.slider('Select min summary length', 10, 450, step=10, value=50)
+    max_length = st.sidebar.slider('📏 Select max summary length', 50, 500, step=10, value=150)
+    min_length = st.sidebar.slider('📏 Select min summary length', 10, 450, step=10, value=50)
 
     if button and video:
         with st.spinner("Converting video to audio..."):
@@ -62,8 +63,14 @@ def main():
         with st.spinner("Generating summary..."):
             video_summary = generate_summary(whole_text, max_length, min_length)
 
-        st.write("Video Summary:")
+        st.write("📜 Video Summary:")
         st.write(video_summary)
+
+        # Share Option
+        st.markdown("---")
+        st.write("🚀 Share the Summary:")
+        share_link = st.text_input("🔗 Copy and Share this Link", value=video_summary, key="share_link")
+        st.button("📋 Copy to Clipboard", onclick=lambda: st.write(share_link))
 
 if __name__ == "__main__":
     main()
