@@ -1,4 +1,5 @@
 import streamlit as st
+import os
 import moviepy.editor as mp
 import speech_recognition as sr
 from pydub import AudioSegment
@@ -41,7 +42,7 @@ def generate_summary(text, max_length=150, min_length=50):
     return summarized[0]['summary_text']
 
 def main():
-    st.title("🎬 Summary Generator📜")
+    st.title("🎬 Video to Audio & Summary App 📜")
     st.write("Welcome! This is the Summary Generator. You can upload English, Hindi, or Kannada language videos to get a summary.")
     video = st.file_uploader("📁 Upload a video", type=["mp4"])
     button = st.button("🚀 Summarize")
@@ -54,8 +55,8 @@ def main():
 
     if button and video:
         with st.spinner("Converting video to audio..."):
-            tfile = video.name
-            video_to_audio(tfile, "output_audio.wav")
+            video_path = os.path.join("video", video.name)
+            video_to_audio(video_path, "output_audio.wav")
 
         with st.spinner("Generating audio transcription..."):
             whole_text = get_large_audio_transcription("output_audio.wav", language=lang_options[selected_lang])
