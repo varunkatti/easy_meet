@@ -65,7 +65,7 @@ with st.spinner("Generating Summary.."):
         st.audio("movie.wav")
         whole_text=get_large_audio_transcription("movie.wav")
         #st.write(whole_text)
-        summarizer = pipeline("summarization")
+        summarizer = pipeline("summarization",model="t5-small")
         summarized = summarizer(whole_text, min_length=min, max_length=max)
         summ=summarized[0]['summary_text']
         st.write(summ)
