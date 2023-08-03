@@ -8,6 +8,7 @@ from pydub.silence import split_on_silence
 from transformers import pipeline
 from langdetect import detect
 from googletrans import Translator
+import pyperclip
 
 # Function to convert video to audio
 def video_to_audio(input_video, output_audio):
@@ -91,10 +92,12 @@ with st.spinner("Generating Summary.."):
         st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
         st.write("🚀 Share the Summary:")
         share_link = st.text_input("🔗 Copy and Share this Link", value=english_summary, key="share_link")
-        st.button("📋 Copy to Clipboard", onclick=lambda: st.write(share_link))
+        if st.button("📋 Copy to Clipboard"):
+            pyperclip.copy(share_link)
+            st.write("Copied to clipboard!")
         st.markdown("</div>", unsafe_allow_html=True)
 
 # Footer
 st.markdown("<div class='footer'>", unsafe_allow_html=True)
-st.write("Developed by Varun,Vinuta")
+st.write("Developed by Vinuta, Varun")
 st.markdown("</div>", unsafe_allow_html=True)
