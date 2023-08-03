@@ -6,7 +6,6 @@ import speech_recognition as sr
 from pydub import AudioSegment
 from pydub.silence import split_on_silence
 from transformers import pipeline
-from langdetect import detect
 from googletrans import Translator
 import pyperclip
 
@@ -31,14 +30,7 @@ def get_large_audio_transcription(path, language='en-US'):
         with sr.AudioFile(chunk_filename) as source:
             audio_listened = r.record(source)
             try:
-                # Convert bytes-like object to a string and ignore invalid characters
-                audio_text = audio_listened.get_raw_data().decode("utf-8", errors="ignore")
-                # Detect language of the audio
-                lang = detect(audio_text)
-                if lang in ['hi', 'kn']:
-                    text = r.recognize_google(audio_listened, language=lang)
-                else:
-                    text = r.recognize_google(audio_listened)
+                text = r.recognize_google(audio_listened, language=language)
             except sr.UnknownValueError as e:
                 print("Error:", str(e))
             else:
@@ -57,9 +49,9 @@ st.write("Welcome! This is the Summary Generator. You can upload videos in any l
 video = st.file_uploader("Choose a file", type=['mp4'])
 button = st.button("Summarize")
 
-# Language selection dropdown in sidebar
+# Language selection dropdown for manual selection
 lang_options = {'English': 'en-US', 'Hindi': 'hi', 'Kannada': 'kn'}
-selected_lang = st.sidebar.selectbox('Select Language', options=list(lang_options.keys()))
+selected_lang = st.selectbox('Select Language', options=list(lang_options.keys()))
 
 max = st.sidebar.slider('Select max summary length', 50, 500, step=10, value=150)
 min = st.sidebar.slider('Select min summary length', 10, 450, step=10, value=50)
