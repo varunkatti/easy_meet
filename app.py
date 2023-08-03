@@ -6,7 +6,7 @@ import speech_recognition as sr
 from pydub import AudioSegment
 from pydub.silence import split_on_silence
 from transformers import pipeline
-from googletrans import Translator
+import translate
 import pyperclip
 
 # Function to convert video to audio
@@ -38,11 +38,11 @@ def get_large_audio_transcription(path, language='en-US'):
                 whole_text += text
     return whole_text
 
-# Function to translate text to English using Google Translate
+# Function to translate text to English using the `translate` library
 def translate_to_english(text, src_lang):
-    translator = Translator()
-    translated_text = translator.translate(text, src=src_lang, dest='en')
-    return translated_text.text
+    translator = translate.Translator(from_lang=src_lang, to_lang='en')
+    translated_text = translator.translate(text)
+    return translated_text
 
 st.title("Summarize Text")
 st.write("Welcome! This is the Summary Generator. You can upload videos in any language (English, Hindi, or Kannada). The audio will be in the selected language, but the summary will be in English.")
@@ -93,5 +93,5 @@ with st.spinner("Generating Summary.."):
 
 # Footer
 st.markdown("<div class='footer'>", unsafe_allow_html=True)
-st.write("Developed by Vinuta, Varun")
+st.write("Developed by Your Vinuta, Varun")
 st.markdown("</div>", unsafe_allow_html=True)
