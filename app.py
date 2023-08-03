@@ -30,8 +30,8 @@ def get_large_audio_transcription(path, language='en-US'):
         with sr.AudioFile(chunk_filename) as source:
             audio_listened = r.record(source)
             try:
-                # Convert bytes-like object to a string
-                audio_text = audio_listened.get_raw_data().decode()
+                # Convert bytes-like object to a string and ignore invalid characters
+                audio_text = audio_listened.get_raw_data().decode("utf-8", errors="ignore")
                 # Detect language of the audio
                 lang = detect(audio_text)
                 if lang in ['hi', 'kn']:
@@ -96,5 +96,5 @@ with st.spinner("Generating Summary.."):
 
 # Footer
 st.markdown("<div class='footer'>", unsafe_allow_html=True)
-st.write("Developed by Your Name")
+st.write("Developed by Varun,Vinuta")
 st.markdown("</div>", unsafe_allow_html=True)
