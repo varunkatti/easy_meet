@@ -7,6 +7,7 @@ from pydub import AudioSegment
 from pydub.silence import split_on_silence
 from transformers import pipeline
 from langdetect import detect
+from googletrans import Translator
 
 # Function to convert video to audio
 def video_to_audio(input_video, output_audio):
@@ -29,8 +30,10 @@ def get_large_audio_transcription(path, language='en-US'):
         with sr.AudioFile(chunk_filename) as source:
             audio_listened = r.record(source)
             try:
+                # Convert bytes-like object to a string
+                audio_text = audio_listened.get_raw_data().decode()
                 # Detect language of the audio
-                lang = detect(audio_listened.get_raw_data())
+                lang = detect(audio_text)
                 if lang in ['hi', 'kn']:
                     text = r.recognize_google(audio_listened, language=lang)
                 else:
@@ -42,49 +45,20 @@ def get_large_audio_transcription(path, language='en-US'):
                 whole_text += text
     return whole_text
 
-# Main app layout and styling
-st.set_page_config(page_title="Video to Audio & Summary App", layout="wide", initial_sidebar_state="collapsed")
-st.title("🎬 Video to Audio & Summary App 📜")
-st.markdown(
-    """
-    <style>
-    .main-title {
-        font-size: 36px;
-        color: #404040;
-        margin-bottom: 30px;
-    }
-    .file-upload-container {
-        margin-bottom: 30px;
-    }
-    .sidebar {
-        background-color: #f5f5f5;
-        padding: 15px;
-    }
-    .summary-container {
-        background-color: #ffffff;
-        padding: 20px;
-        border: 1px solid #dcdcdc;
-        border-radius: 10px;
-        margin-top: 20px;
-    }
-    .footer {
-        font-size: 14px;
-        color: #808080;
-        text-align: center;
-        margin-top: 30px;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+# Function to translate text to English using Google Translate
+def translate_to_english(text):
+    translator = Translator()
+    translated_text = translator.translate(text, src='auto', dest='en')
+    return translated_text.text
 
-st.write("Welcome! This is the Summary Generator. You can upload English, Hindi, or Kannada language videos to get a summary.")
+st.title("Summarize Text")
+st.write("Welcome! This is the Summary Generator. You can upload videos in any language (English, Hindi, or Kannada). The audio will be in the selected language, but the summary will be in English.")
 video = st.file_uploader("Choose a file", type=['mp4'])
 button = st.button("Summarize")
 
-# Language selection slider
+# Language selection dropdown in sidebar
 lang_options = {'English': 'en-US', 'Hindi': 'hi', 'Kannada': 'kn'}
-selected_lang = st.select_slider('Select Language', options=list(lang_options.keys()))
+selected_lang = st.sidebar.selectbox('Select Language', options=list(lang_options.keys()))
 
 max = st.sidebar.slider('Select max summary length', 50, 500, step=10, value=150)
 min = st.sidebar.slider('Select min summary length', 10, 450, step=10, value=50)
@@ -103,15 +77,20 @@ with st.spinner("Generating Summary.."):
         summarized = summarizer(whole_text, min_length=min, max_length=max, do_sample=False)
         summ = summarized[0]['summary_text']
 
+        # Translate the summary to English
+        english_summary = translate_to_english(summ)
+
         st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
-        st.write("📜 Video Summary:")
-        st.write(summ)
+        st.write(f"📜 Video Summary ({selected_lang}):")
+        st.write(whole_text)
+        st.write("🌟 Translated Summary (English):")
+        st.write(english_summary)
         st.markdown("</div>", unsafe_allow_html=True)
 
         # Share Option
         st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
         st.write("🚀 Share the Summary:")
-        share_link = st.text_input("🔗 Copy and Share this Link", value=summ, key="share_link")
+        share_link = st.text_input("🔗 Copy and Share this Link", value=english_summary, key="share_link")
         st.button("📋 Copy to Clipboard", onclick=lambda: st.write(share_link))
         st.markdown("</div>", unsafe_allow_html=True)
 
