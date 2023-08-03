@@ -73,7 +73,7 @@ with st.spinner("Generating Summary.."):
         summ = summarized[0]['summary_text']
 
         # Translate the summary to English
-        english_summary = translate_to_english(summ, lang_options[selected_lang])
+        english_summary = translate_to_english(summ, selected_lang)
 
         st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
         st.write(f"📜 Video Summary ({selected_lang}):")
