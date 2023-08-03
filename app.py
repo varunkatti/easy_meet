@@ -6,7 +6,7 @@ import speech_recognition as sr
 from pydub import AudioSegment
 from pydub.silence import split_on_silence
 from transformers import pipeline
-import translate
+from googletrans import Translator
 import pyperclip
 
 # Function to convert video to audio
@@ -14,7 +14,7 @@ def video_to_audio(input_video, output_audio):
     video = VideoFileClip(input_video)
     video.audio.write_audiofile(output_audio)
 
-# Updated function to get audio transcription
+# Function to get audio transcription
 def get_large_audio_transcription(path, language='en-US'):
     r = sr.Recognizer()
     sound = AudioSegment.from_wav(path)
@@ -29,27 +29,24 @@ def get_large_audio_transcription(path, language='en-US'):
         audio_chunk.export(chunk_filename, format="wav")
         with sr.AudioFile(chunk_filename) as source:
             audio_listened = r.record(source)
-            # Check if the chunk has audio data (not just silence)
-            if audio_listened.frame_data:
-                try:
-                    text = r.recognize_google(audio_listened, language=language)
-                except sr.UnknownValueError as e:
-                    print("Error:", str(e))
-                    continue  # Handle StopIteration, continue to the next chunk
-                else:
-                    text = f"{text.capitalize()}. "
-                    whole_text += text
+            try:
+                text = r.recognize_google(audio_listened, language=language)
+            except sr.UnknownValueError as e:
+                print("Error:", str(e))
+            else:
+                text = f"{text.capitalize()}. "
+                whole_text += text
     return whole_text
 
-
-# Function to translate text to English using the `translate` library
+# Function to translate text to English using Google Translate
 def translate_to_english(text, src_lang):
-    translator = translate.Translator(from_lang=src_lang, to_lang='en')
-    translated_text = translator.translate(text)
-    return translated_text
+    translator = Translator()
+    translated_text = translator.translate(text, src=src_lang, dest='en')
+    return translated_text.text
 
-st.title("Summarize Text")
-st.write("Welcome! This is the Summary Generator. You can upload videos in any language (English, Hindi, or Kannada). The audio will be in the selected language, but the summary will be in English.")
+st.title("EASY-MEET")
+st.markdown("<h1 style='font-size: 24px;'>Text Summarizer</h1>", unsafe_allow_html=True)
+st.write("Welcome All! This is the Summary Generator. You can upload videos in any language (English, Hindi, or Kannada). And get summary on selected language")
 video = st.file_uploader("Choose a file", type=['mp4'])
 button = st.button("Summarize")
 
