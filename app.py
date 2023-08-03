@@ -44,17 +44,29 @@ def translate_to_english(text):
     translated_text = translator.translate(text, src='auto', dest='en')
     return translated_text.text
 
+# Function to translate individual words to English using Google Translate
+def translate_words_to_english(text):
+    translator = Translator()
+    translated_text = []
+    words = text.split()
+    for word in words:
+        translated_word = translator.translate(word, src='auto', dest='en')
+        translated_text.append(translated_word.text)
+    return ' '.join(translated_text)
+
 st.title("Summarize Text")
 st.write("Welcome! This is the Summary Generator. You can upload videos in any language (English, Hindi, or Kannada). The audio will be in the selected language, but the summary will be in English.")
 video = st.file_uploader("Choose a file", type=['mp4'])
 button = st.button("Summarize")
 
-# Language selection dropdown for manual selection
-lang_options = {'English': 'en-US', 'Hindi': 'hi', 'Kannada': 'kn'}
-selected_lang = st.selectbox('Select Language', options=list(lang_options.keys()))
+# Sidebar with language selection dropdown and max/min slider
+with st.sidebar:
+    st.subheader("Language and Summary Length")
+    lang_options = {'English': 'en-US', 'Hindi': 'hi', 'Kannada': 'kn'}
+    selected_lang = st.selectbox('Select Language', options=list(lang_options.keys()))
 
-max = st.sidebar.slider('Select max summary length', 50, 500, step=10, value=150)
-min = st.sidebar.slider('Select min summary length', 10, 450, step=10, value=50)
+    max = st.slider('Select max summary length', 50, 500, step=10, value=150)
+    min = st.slider('Select min summary length', 10, 450, step=10, value=50)
 
 # Summary generation and display
 with st.spinner("Generating Summary.."):
