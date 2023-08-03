@@ -39,20 +39,10 @@ def get_large_audio_transcription(path, language='en-US'):
     return whole_text
 
 # Function to translate text to English using Google Translate
-def translate_to_english(text):
+def translate_to_english(text, src_lang):
     translator = Translator()
-    translated_text = translator.translate(text, src='auto', dest='en')
+    translated_text = translator.translate(text, src=src_lang, dest='en')
     return translated_text.text
-
-# Function to translate individual words to English using Google Translate
-def translate_words_to_english(text):
-    translator = Translator()
-    translated_text = []
-    words = text.split()
-    for word in words:
-        translated_word = translator.translate(word, src='auto', dest='en')
-        translated_text.append(translated_word.text)
-    return ' '.join(translated_text)
 
 st.title("Summarize Text")
 st.write("Welcome! This is the Summary Generator. You can upload videos in any language (English, Hindi, or Kannada). The audio will be in the selected language, but the summary will be in English.")
@@ -83,7 +73,7 @@ with st.spinner("Generating Summary.."):
         summ = summarized[0]['summary_text']
 
         # Translate the summary to English
-        english_summary = translate_to_english(summ)
+        english_summary = translate_to_english(summ, lang_options[selected_lang])
 
         st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
         st.write(f"📜 Video Summary ({selected_lang}):")
