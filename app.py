@@ -14,7 +14,7 @@ def video_to_audio(input_video, output_audio):
     video = VideoFileClip(input_video)
     video.audio.write_audiofile(output_audio)
 
-# Function to get audio transcription
+# Updated function to get audio transcription
 def get_large_audio_transcription(path, language='en-US'):
     r = sr.Recognizer()
     sound = AudioSegment.from_wav(path)
@@ -33,6 +33,7 @@ def get_large_audio_transcription(path, language='en-US'):
                 text = r.recognize_google(audio_listened, language=language)
             except sr.UnknownValueError as e:
                 print("Error:", str(e))
+                continue  # Handle StopIteration, continue to the next chunk
             else:
                 text = f"{text.capitalize()}. "
                 whole_text += text
@@ -93,5 +94,5 @@ with st.spinner("Generating Summary.."):
 
 # Footer
 st.markdown("<div class='footer'>", unsafe_allow_html=True)
-st.write("Developed by Your Vinuta, Varun")
+st.write("Developed by Vinuta, Varun")
 st.markdown("</div>", unsafe_allow_html=True)
