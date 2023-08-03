@@ -29,15 +29,18 @@ def get_large_audio_transcription(path, language='en-US'):
         audio_chunk.export(chunk_filename, format="wav")
         with sr.AudioFile(chunk_filename) as source:
             audio_listened = r.record(source)
-            try:
-                text = r.recognize_google(audio_listened, language=language)
-            except sr.UnknownValueError as e:
-                print("Error:", str(e))
-                continue  # Handle StopIteration, continue to the next chunk
-            else:
-                text = f"{text.capitalize()}. "
-                whole_text += text
+            # Check if the chunk has audio data (not just silence)
+            if audio_listened.frame_data:
+                try:
+                    text = r.recognize_google(audio_listened, language=language)
+                except sr.UnknownValueError as e:
+                    print("Error:", str(e))
+                    continue  # Handle StopIteration, continue to the next chunk
+                else:
+                    text = f"{text.capitalize()}. "
+                    whole_text += text
     return whole_text
+
 
 # Function to translate text to English using the `translate` library
 def translate_to_english(text, src_lang):
