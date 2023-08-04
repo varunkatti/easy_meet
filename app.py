@@ -42,8 +42,13 @@ def get_large_audio_transcription(path, language='en-US'):
 def translate_to_english(text):
     return translate(text, "en", "auto")
 
+# Function to get the translated summary from the audio using mtranslate
+def get_translated_summary(whole_text):
+    return translate_to_english(whole_text)
+
 st.title("Multilingual Video Summarizer")
 st.write("Welcome! This is the Multilingual Video Summarizer. You can upload videos in any language (English, Hindi, or Kannada). The audio will be in the selected language, but the summary will be in English.")
+
 video = st.file_uploader("Choose a file", type=['mp4'])
 button = st.button("Summarize")
 
@@ -74,7 +79,7 @@ with st.spinner("Generating Summary.."):
         st.write(f"📜 Video Summary ({selected_lang}):")
         st.write(whole_text)
         st.write("🌟 Translated Summary (English):")
-        translated_summary = translate_to_english(summ)
+        translated_summary = get_translated_summary(whole_text)
         st.write(translated_summary)
         st.markdown("</div>", unsafe_allow_html=True)
 
@@ -83,7 +88,7 @@ with st.spinner("Generating Summary.."):
         st.write("🚀 Share the Summary:")
         share_link = st.text_input("🔗 Copy and Share this Link", value=translated_summary, key="share_link")
         if st.button("📋 Copy to Clipboard"):
-            pyperclip.copy(share_link)
+            pyperclip.copy(translated_summary)
             st.write("Copied to clipboard!")
         st.markdown("</div>", unsafe_allow_html=True)
 
