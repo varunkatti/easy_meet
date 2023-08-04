@@ -44,9 +44,8 @@ def translate_to_english(text, src_lang):
     translated_text = translator.translate(text, src=src_lang, dest='en')
     return translated_text.text
 
-st.title("EASY-MEET")
-st.markdown("<h1 style='font-size: 24px;'>Text Summarizer</h1>", unsafe_allow_html=True)
-st.write("Welcome All! This is the Summary Generator. You can upload videos in any language (English, Hindi, or Kannada). And get summary on selected language")
+st.title("Multilingual Video Summarizer")
+st.write("Welcome! This is the Multilingual Video Summarizer. You can upload videos in any language (English, Hindi, or Kannada). The audio will be in the selected language, but the summary will be in English.")
 video = st.file_uploader("Choose a file", type=['mp4'])
 button = st.button("Summarize")
 
@@ -73,8 +72,11 @@ with st.spinner("Generating Summary.."):
         summarized = summarizer(whole_text, min_length=min, max_length=max, do_sample=False)
         summ = summarized[0]['summary_text']
 
-        # Translate the summary to English
-        english_summary = translate_to_english(summ, selected_lang)
+        # Translate the summary to English if not already in English
+        if selected_lang != 'English':
+            english_summary = translate_to_english(summ, selected_lang)
+        else:
+            english_summary = summ
 
         st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
         st.write(f"📜 Video Summary ({selected_lang}):")
@@ -96,3 +98,4 @@ with st.spinner("Generating Summary.."):
 st.markdown("<div class='footer'>", unsafe_allow_html=True)
 st.write("Developed by Vinuta, Varun")
 st.markdown("</div>", unsafe_allow_html=True)
+
