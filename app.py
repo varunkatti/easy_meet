@@ -6,7 +6,7 @@ import speech_recognition as sr
 from pydub import AudioSegment
 from pydub.silence import split_on_silence
 from transformers import pipeline
-from googletrans import Translator
+from mtranslate import translate
 import pyperclip
 
 # Function to convert video to audio
@@ -38,11 +38,9 @@ def get_large_audio_transcription(path, language='en-US'):
                 whole_text += text
     return whole_text
 
-# Function to translate text to English using Google Translate
-def translate_to_english(text, src_lang):
-    translator = Translator()
-    translated_text = translator.translate(text, src=src_lang, dest='en')
-    return translated_text.text
+# Function to translate text to Kannada using mtranslate
+def translate_to_kannada(text):
+    return translate(text, "kn", "en")
 
 st.title("Multilingual Video Summarizer")
 st.write("Welcome! This is the Multilingual Video Summarizer. You can upload videos in any language (English, Hindi, or Kannada). The audio will be in the selected language, but the summary will be in English.")
@@ -72,23 +70,23 @@ with st.spinner("Generating Summary.."):
         summarized = summarizer(whole_text, min_length=min, max_length=max, do_sample=False)
         summ = summarized[0]['summary_text']
 
-        # Translate the summary to English if not already in English
-        if selected_lang != 'English':
-            english_summary = translate_to_english(summ, selected_lang)
+        # Translate the summary to Kannada if not already in Kannada
+        if selected_lang == 'Kannada':
+            kannada_summary = summ
         else:
-            english_summary = summ
+            kannada_summary = translate_to_kannada(summ)
 
         st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
         st.write(f"📜 Video Summary ({selected_lang}):")
         st.write(whole_text)
-        st.write("🌟 Translated Summary (English):")
-        st.write(english_summary)
+        st.write(f"🌟 Translated Summary ({selected_lang}):")
+        st.write(kannada_summary)
         st.markdown("</div>", unsafe_allow_html=True)
 
         # Share Option
         st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
         st.write("🚀 Share the Summary:")
-        share_link = st.text_input("🔗 Copy and Share this Link", value=english_summary, key="share_link")
+        share_link = st.text_input("🔗 Copy and Share this Link", value=kannada_summary, key="share_link")
         if st.button("📋 Copy to Clipboard"):
             pyperclip.copy(share_link)
             st.write("Copied to clipboard!")
@@ -98,5 +96,3 @@ with st.spinner("Generating Summary.."):
 st.markdown("<div class='footer'>", unsafe_allow_html=True)
 st.write("Developed by Vinuta, Varun")
 st.markdown("</div>", unsafe_allow_html=True)
-
-
