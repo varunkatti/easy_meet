@@ -38,9 +38,9 @@ def get_large_audio_transcription(path, language='en-US'):
                 whole_text += text
     return whole_text
 
-# Function to translate text to Kannada using mtranslate
-def translate_to_kannada(text):
-    return translate(text, "kn", "en")
+# Function to translate text to English using mtranslate
+def translate_to_english(text):
+    return translate(text, "en", "auto")
 
 st.title("Multilingual Video Summarizer")
 st.write("Welcome! This is the Multilingual Video Summarizer. You can upload videos in any language (English, Hindi, or Kannada). The audio will be in the selected language, but the summary will be in English.")
@@ -70,23 +70,18 @@ with st.spinner("Generating Summary.."):
         summarized = summarizer(whole_text, min_length=min, max_length=max, do_sample=False)
         summ = summarized[0]['summary_text']
 
-        # Translate the summary to Kannada if not already in Kannada
-        if selected_lang == 'Kannada':
-            kannada_summary = summ
-        else:
-            kannada_summary = translate_to_kannada(summ)
-
         st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
         st.write(f"📜 Video Summary ({selected_lang}):")
         st.write(whole_text)
-        st.write(f"🌟 Translated Summary ({selected_lang}):")
-        st.write(kannada_summary)
+        st.write("🌟 Translated Summary (English):")
+        translated_summary = translate_to_english(summ)
+        st.write(translated_summary)
         st.markdown("</div>", unsafe_allow_html=True)
 
         # Share Option
         st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
         st.write("🚀 Share the Summary:")
-        share_link = st.text_input("🔗 Copy and Share this Link", value=kannada_summary, key="share_link")
+        share_link = st.text_input("🔗 Copy and Share this Link", value=translated_summary, key="share_link")
         if st.button("📋 Copy to Clipboard"):
             pyperclip.copy(share_link)
             st.write("Copied to clipboard!")
