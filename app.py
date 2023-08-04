@@ -99,3 +99,4 @@ st.markdown("<div class='footer'>", unsafe_allow_html=True)
 st.write("Developed by Vinuta, Varun")
 st.markdown("</div>", unsafe_allow_html=True)
 
+
