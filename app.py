@@ -66,7 +66,7 @@ button = st.button("Summarize")
 # Sidebar with language selection dropdown and max/min slider
 with st.sidebar:
     st.subheader("Language and Summary Length")
-    lang_options = {'English': 'en', 'Hindi': 'hi', 'Kannada': 'kn'}  # ISO 639-1 codes
+    lang_options = {'English': 'en', 'Hindi': 'hi', 'Kannada': 'kn'}
     selected_lang = st.selectbox('Select Language', options=list(lang_options.keys()))
 
     max_length = st.slider('Select max summary length', 50, 500, step=10, value=150)
