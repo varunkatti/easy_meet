@@ -38,15 +38,13 @@ def get_large_audio_transcription(path, language='en-US'):
                 whole_text += text
     return whole_text
 
-# Function to translate text to English using Google Translate
-def translate_to_english(text, src_lang):
-    translator = Translator()
-    translated_text = translator.translate(text, src=src_lang, dest='en')
-    return translated_text.text
-
 # Function to get the translated summary from the audio using Google Translate
 def get_translated_summary(whole_text, src_lang):
-    return translate_to_english(whole_text, src_lang)
+    if src_lang != 'en':
+        translator = Translator()
+        translated = translator.translate(whole_text, src=src_lang, dest='en')
+        return translated.text
+    return whole_text
 
 # Function to check if a video format is supported
 def is_supported_format(filename):
