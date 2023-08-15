@@ -38,17 +38,17 @@ def get_large_audio_transcription(path, language='en-US'):
                 whole_text += text
     return whole_text
 
-# Function to get the translated summary from the audio using Google Translate
-def get_translated_summary(whole_text, src_lang):
-    # Force the source language to be recognized as English
-    if src_lang == 'en':
-        src_lang = 'en-US'  # Use 'en-US' as the source language code for English
-    if src_lang != 'en-US':
-        translator = Translator()
-        translated = translator.translate(whole_text, src=src_lang, dest='en')
-        cleaned_text = translated.text
-        return cleaned_text
-    return whole_text
+# Function to get the summarized text within the desired length range
+def truncate_summary(summary, min_length, max_length):
+    words = summary.split()
+    truncated_words = words[:max_length]
+    truncated_summary = " ".join(truncated_words)
+    
+    # Ensure the truncated summary is at least the minimum length
+    if len(truncated_summary.split()) < min_length:
+        return " ".join(words[:min_length])
+    
+    return truncated_summary
 
 
 # Function to check if a video format is supported
@@ -92,13 +92,17 @@ with st.spinner("Generating Summary.."):
             summarized = summarizer(whole_text, min_length=min, max_length=max, do_sample=False)
             summ = summarized[0]['summary_text']
 
+            # Truncate the summary to the user-adjusted length range
+            truncated_summary = truncate_summary(summ, min, max)
+            
             st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
             st.write(f"📜 Video Summary ({selected_lang}):")
             st.write(whole_text)
             st.write("🌟 Translated Summary (English):")
-            translated_summary = get_translated_summary(whole_text, lang_options[selected_lang])
+            translated_summary = get_translated_summary(truncated_summary, lang_options[selected_lang])
             st.write(translated_summary)
             st.markdown("</div>", unsafe_allow_html=True)
+
 
             # Share Option
             st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
