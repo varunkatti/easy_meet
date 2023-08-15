@@ -102,7 +102,7 @@ with st.spinner("Generating Summary.."):
             st.write(whole_text)
             st.write("🌟 Translated Summary (English):")
             translated_summary = get_translated_summary(whole_text, lang_options[selected_lang])
-            st.write(translated_summary)
+            st.write(truncated_summary)  # Display the adjusted summary
             st.markdown("</div>", unsafe_allow_html=True)
 
             # Share Option
