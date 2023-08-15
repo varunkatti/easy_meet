@@ -39,13 +39,17 @@ def get_large_audio_transcription(path, language='en-US'):
     return whole_text
 
 # Function to get the translated summary from the audio using Google Translate
+# Function to get the translated summary from the audio using Google Translate
 def get_translated_summary(whole_text, src_lang):
+    translator = Translator()
+
     if src_lang != 'en':
-        translator = Translator()
         translated = translator.translate(whole_text, src=src_lang, dest='en')
         cleaned_text = translated.text
         return cleaned_text
+
     return whole_text
+
 
 # Function to check if a video format is supported
 def is_supported_format(filename):
@@ -97,11 +101,11 @@ with st.spinner("Generating Summary.."):
             whole_text = get_large_audio_transcription("movie.wav", language=lang_options[selected_lang])
 
             summarizer = pipeline("summarization", model="t5-small", tokenizer="t5-small", framework="pt")
-            summarized = summarizer(whole_text, min_length=min_length, max_length=max_length, do_sample=False)
+            summarized = summarizer(whole_text, min_length=min, max_length=max, do_sample=False)
             summ = summarized[0]['summary_text']
 
             # Truncate the summary to the user-adjusted length range
-            truncated_summary = truncate_summary(summ, min_length, max_length)
+            truncated_summary = truncate_summary(summ, min, max)
             
             st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
             st.write(f"📜 Video Summary ({selected_lang}):")
