@@ -38,7 +38,7 @@ def get_large_audio_transcription(path, language='en-US'):
                 whole_text += text
     return whole_text
 
-# Function to get the translated summary from the audio using Google Translate
+
 # Function to get the translated summary from the audio using Google Translate
 def get_translated_summary(whole_text, src_lang):
     translator = Translator()
@@ -63,9 +63,10 @@ def truncate_summary(summary, min_length, max_length):
     truncated_words = words[:max_length]
     truncated_summary = " ".join(truncated_words)
     
-    # Ensure the truncated summary is at least the minimum length
+   # Ensure the truncated summary is at least the minimum length
 if len(truncated_summary.split()) < min_length:
-    return " ".join(words[:min_length])
+    truncated_summary = " ".join(words[:min_length])
+
 
     
     return truncated_summary
