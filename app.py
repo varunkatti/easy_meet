@@ -104,11 +104,16 @@ with st.spinner("Generating Summary.."):
 
             st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
             st.write(f"📜 Video Summary ({selected_lang}):")
-
-            # Truncate the summary to fit within the desired length range
-            truncated_summary = truncate_summary(summ, min_length, max_length)
-
-            st.write(truncated_summary)  # Display the truncated summary
+            
+            # Adjust the summary length based on user-selected min and max values
+            adjusted_min = min_length
+            adjusted_max = max_length
+            if len(summ.split()) < min_length:
+                adjusted_min = len(summ.split())
+            elif len(summ.split()) > max_length:
+                adjusted_max = len(summ.split())
+            
+            st.write(summ[:adjusted_max])  # Display the adjusted summary
             st.markdown("</div>", unsafe_allow_html=True)
 
             # Share Option
@@ -116,7 +121,7 @@ with st.spinner("Generating Summary.."):
             st.write("🚀 Share the Summary:")
             share_link = st.text_input("🔗 Copy and Share this Link", value="", key="share_link")
             if st.button("📋 Copy to Clipboard"):
-                pyperclip.copy(truncated_summary)
+                pyperclip.copy(summ[:adjusted_max])
                 st.write("Copied to clipboard!")
             st.markdown("</div>", unsafe_allow_html=True)
 
