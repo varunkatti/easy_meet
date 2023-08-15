@@ -43,8 +43,14 @@ def get_translated_summary(whole_text, src_lang):
     if src_lang != 'en':
         translator = Translator()
         translated = translator.translate(whole_text, src=src_lang, dest='en')
-        return translated.text
+        cleaned_text = translated.text
+
+        # Clean the text
+        cleaned_text = cleaned_text.replace('\x200b', '')  # Removing zero-width space
+        cleaned_text = cleaned_text.encode('utf-8', 'ignore').decode('utf-8')  # Encoding to Unicode
+        return cleaned_text
     return whole_text
+
 
 # Function to check if a video format is supported
 def is_supported_format(filename):
