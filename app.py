@@ -97,7 +97,6 @@ with st.spinner("Generating Summary.."):
                 truncated_words = summ.split()[:min_length]
             truncated_summary = " ".join(truncated_words)
 
-
             st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
             st.write(f"📜 Video Summary ({selected_lang}):")
             st.write(whole_text)
@@ -106,15 +105,16 @@ with st.spinner("Generating Summary.."):
             st.write(translated_summary)
             st.markdown("</div>", unsafe_allow_html=True)
 
-           # Share Option
-           st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
-           st.write("🚀 Share the Summary:")
-           share_link = st.text_input("🔗 Copy and Share this Link", value="", key="share_link")
-           if st.button("📋 Copy to Clipboard"):
-               pyperclip.copy(translated_summary)
-               st.write("Copied to clipboard!")
-               time.sleep(2)  # Add a delay of 2 seconds
-           st.markdown("</div>", unsafe_allow_html=True)
+            # Share Option
+            st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
+            st.write("🚀 Share the Summary:")
+            share_link = st.text_input("🔗 Copy and Share this Link", value="", key="share_link")
+            if st.button("📋 Copy to Clipboard"):
+                pyperclip.copy(translated_summary)
+                st.write("Copied to clipboard!")
+                time.sleep(2)  # Add a delay of 2 seconds to display the message
+            st.markdown("</div>", unsafe_allow_html=True)
+
 # Footer
 st.markdown("<div class='footer'>", unsafe_allow_html=True)
 st.write("Developed by Vinuta. Varun")
