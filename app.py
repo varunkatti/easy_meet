@@ -64,8 +64,9 @@ def truncate_summary(summary, min_length, max_length):
     truncated_summary = " ".join(truncated_words)
     
     # Ensure the truncated summary is at least the minimum length
-    if len(truncated_summary.split()) < min_length:
-        return " ".join(words[:min_length])
+if len(truncated_summary.split()) < min_length:
+    return " ".join(words[:min_length])
+
     
     return truncated_summary
 
