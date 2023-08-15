@@ -87,33 +87,37 @@ with st.sidebar:
 
 # Summary generation and display
 with st.spinner("Generating Summary.."):
-    if button:
-        if not video:
-            st.error("Please upload a video before clicking the 'Summarize' button.")
-        elif not is_supported_format(video.name):
-            st.error("Unsupported video format. Supported formats: .mp4, .avi, .mkv")
-        else:
-            tfile = tempfile.NamedTemporaryFile(delete=False)
-            tfile.write(video.read())
-            v = VideoFileClip(tfile.name)
-            v.audio.write_audiofile("movie.wav")
-            st.audio("movie.wav")
-            whole_text = get_large_audio_transcription("movie.wav", language=lang_options[selected_lang])
+if button:
+    if not video:
+        st.error("Please upload a video before clicking the 'Summarize' button.")
+    elif not is_supported_format(video.name):
+        st.error("Unsupported video format. Supported formats: .mp4, .avi, .mkv")
+    else:
+        tfile = tempfile.NamedTemporaryFile(delete=False)
+        tfile.write(video.read())
+        v = VideoFileClip(tfile.name)
+        v.audio.write_audiofile("movie.wav")
+        st.audio("movie.wav")
+        whole_text = get_large_audio_transcription("movie.wav", language=lang_options[selected_lang])
 
-            summarizer = pipeline("summarization", model="t5-small", tokenizer="t5-small", framework="pt")
-            summarized = summarizer(whole_text, min_length=min, max_length=max, do_sample=False)
-            summ = summarized[0]['summary_text']
+        summarizer = pipeline("summarization", model="t5-small", tokenizer="t5-small", framework="pt")
+        summarized = summarizer(whole_text, min_length=min, max_length=max, do_sample=False)
+        summ = summarized[0]['summary_text']
 
-            # Truncate the summary to the user-adjusted length range
-            truncated_summary = truncate_summary(summ, min, max)
+        st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
+        st.write(f"📜 Video Summary ({selected_lang}):")
+        
+        # Adjust the summary length based on user-selected min and max values
+        adjusted_min = min
+        adjusted_max = max
+        if len(summ.split()) < min:
+            adjusted_min = len(summ.split())
+        elif len(summ.split()) > max:
+            adjusted_max = len(summ.split())
             
-            st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
-            st.write(f"📜 Video Summary ({selected_lang}):")
-            st.write(whole_text)
-            st.write("🌟 Translated Summary (English):")
-            translated_summary = get_translated_summary(truncated_summary, lang_options[selected_lang])
-            st.write(translated_summary)
-            st.markdown("</div>", unsafe_allow_html=True)
+        st.write(summ[:adjusted_max])  # Display the adjusted summary
+        st.markdown("</div>", unsafe_allow_html=True)
+
 
 
             # Share Option
