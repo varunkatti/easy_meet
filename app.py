@@ -90,6 +90,11 @@ with st.spinner("Generating Summary.."):
             summarized = summarizer(whole_text, min_length=min_length, max_length=max_length, do_sample=False)
             summ = summarized[0]['summary_text']
 
+            # Truncate the summary to fit within the selected range
+            truncated_summary = " ".join(summ.split()[:max_length])
+            if len(truncated_summary.split()) < min_length:
+                truncated_summary = " ".join(summ.split()[:min_length])
+
             st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
             st.write(f"📜 Video Summary ({selected_lang}):")
             st.write(whole_text)
