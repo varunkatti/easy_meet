@@ -38,6 +38,21 @@ def get_large_audio_transcription(path, language='en-US'):
                 whole_text += text
     return whole_text
 
+# Function to get the translated summary from the audio using Google Translate
+def get_translated_summary(whole_text, src_lang):
+    if src_lang != 'en':
+        translator = Translator()
+        translated = translator.translate(whole_text, src=src_lang, dest='en')
+        cleaned_text = translated.text
+        return cleaned_text
+    return whole_text
+
+# Function to check if a video format is supported
+def is_supported_format(filename):
+    supported_formats = ['.mp4', '.avi', '.mkv']
+    _, ext = os.path.splitext(filename)
+    return ext in supported_formats
+
 # Function to get the summarized text within the desired length range
 def truncate_summary(summary, min_length, max_length):
     words = summary.split()
@@ -49,13 +64,6 @@ def truncate_summary(summary, min_length, max_length):
         return " ".join(words[:min_length])
     
     return truncated_summary
-
-
-# Function to check if a video format is supported
-def is_supported_format(filename):
-    supported_formats = ['.mp4', '.avi', '.mkv']
-    _, ext = os.path.splitext(filename)
-    return ext in supported_formats
 
 # Streamlit UI
 st.title("Multilingual Video Summarizer")
@@ -70,8 +78,8 @@ with st.sidebar:
     lang_options = {'English': 'en-US', 'Hindi': 'hi', 'Kannada': 'kn'}
     selected_lang = st.selectbox('Select Language', options=list(lang_options.keys()))
 
-    max = st.slider('Select max summary length', 50, 500, step=10, value=150)
-    min = st.slider('Select min summary length', 10, 450, step=10, value=50)
+    max_length = st.slider('Select max summary length', 50, 500, step=10, value=150)
+    min_length = st.slider('Select min summary length', 10, 450, step=10, value=50)
 
 # Summary generation and display
 with st.spinner("Generating Summary.."):
@@ -89,11 +97,11 @@ with st.spinner("Generating Summary.."):
             whole_text = get_large_audio_transcription("movie.wav", language=lang_options[selected_lang])
 
             summarizer = pipeline("summarization", model="t5-small", tokenizer="t5-small", framework="pt")
-            summarized = summarizer(whole_text, min_length=min, max_length=max, do_sample=False)
+            summarized = summarizer(whole_text, min_length=min_length, max_length=max_length, do_sample=False)
             summ = summarized[0]['summary_text']
 
             # Truncate the summary to the user-adjusted length range
-            truncated_summary = truncate_summary(summ, min, max)
+            truncated_summary = truncate_summary(summ, min_length, max_length)
             
             st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
             st.write(f"📜 Video Summary ({selected_lang}):")
