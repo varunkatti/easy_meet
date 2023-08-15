@@ -40,14 +40,13 @@ def get_large_audio_transcription(path, language='en-US'):
 
 # Function to get the translated summary from the audio using Google Translate
 def get_translated_summary(whole_text, src_lang):
-    if src_lang != 'en':
+    # Force the source language to be recognized as English
+    if src_lang == 'en':
+        src_lang = 'en-US'  # Use 'en-US' as the source language code for English
+    if src_lang != 'en-US':
         translator = Translator()
         translated = translator.translate(whole_text, src=src_lang, dest='en')
         cleaned_text = translated.text
-
-        # Clean the text
-        cleaned_text = cleaned_text.replace('\x200b', '')  # Removing zero-width space
-        cleaned_text = cleaned_text.encode('utf-8', 'ignore').decode('utf-8')  # Encoding to Unicode
         return cleaned_text
     return whole_text
 
