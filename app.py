@@ -38,7 +38,6 @@ def get_large_audio_transcription(path, language='en-US'):
                 whole_text += text
     return whole_text
 
-
 # Function to get the translated summary from the audio using Google Translate
 def get_translated_summary(whole_text, src_lang):
     translator = Translator()
@@ -49,7 +48,6 @@ def get_translated_summary(whole_text, src_lang):
         return cleaned_text
 
     return whole_text
-
 
 # Function to check if a video format is supported
 def is_supported_format(filename):
@@ -62,10 +60,10 @@ def truncate_summary(summary, min_length, max_length):
     words = summary.split()
     truncated_words = words[:max_length]
     truncated_summary = " ".join(truncated_words)
-    
-# Ensure the truncated summary is at least the minimum length
-if len(truncated_summary.split()) < min_length:
-    return " ".join(words[:min_length])
+
+    # Ensure the truncated summary is at least the minimum length
+    if len(truncated_summary.split()) < min_length:
+        return " ".join(words[:min_length])
 
     return truncated_summary
 
@@ -87,45 +85,38 @@ with st.sidebar:
 
 # Summary generation and display
 with st.spinner("Generating Summary.."):
-if button:
-    if not video:
-        st.error("Please upload a video before clicking the 'Summarize' button.")
-    elif not is_supported_format(video.name):
-        st.error("Unsupported video format. Supported formats: .mp4, .avi, .mkv")
-    else:
-        tfile = tempfile.NamedTemporaryFile(delete=False)
-        tfile.write(video.read())
-        v = VideoFileClip(tfile.name)
-        v.audio.write_audiofile("movie.wav")
-        st.audio("movie.wav")
-        whole_text = get_large_audio_transcription("movie.wav", language=lang_options[selected_lang])
+    if button:
+        if not video:
+            st.error("Please upload a video before clicking the 'Summarize' button.")
+        elif not is_supported_format(video.name):
+            st.error("Unsupported video format. Supported formats: .mp4, .avi, .mkv")
+        else:
+            tfile = tempfile.NamedTemporaryFile(delete=False)
+            tfile.write(video.read())
+            v = VideoFileClip(tfile.name)
+            v.audio.write_audiofile("movie.wav")
+            st.audio("movie.wav")
+            whole_text = get_large_audio_transcription("movie.wav", language=lang_options[selected_lang])
 
-        summarizer = pipeline("summarization", model="t5-small", tokenizer="t5-small", framework="pt")
-        summarized = summarizer(whole_text, min_length=min, max_length=max, do_sample=False)
-        summ = summarized[0]['summary_text']
+            summarizer = pipeline("summarization", model="t5-small", tokenizer="t5-small", framework="pt")
+            summarized = summarizer(whole_text, min_length=min_length, max_length=max_length, do_sample=False)
+            summ = summarized[0]['summary_text']
 
-        st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
-        st.write(f"📜 Video Summary ({selected_lang}):")
-        
-        # Adjust the summary length based on user-selected min and max values
-        adjusted_min = min
-        adjusted_max = max
-        if len(summ.split()) < min:
-            adjusted_min = len(summ.split())
-        elif len(summ.split()) > max:
-            adjusted_max = len(summ.split())
-            
-        st.write(summ[:adjusted_max])  # Display the adjusted summary
-        st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
+            st.write(f"📜 Video Summary ({selected_lang}):")
 
+            # Truncate the summary to fit within the desired length range
+            truncated_summary = truncate_summary(summ, min_length, max_length)
 
+            st.write(truncated_summary)  # Display the truncated summary
+            st.markdown("</div>", unsafe_allow_html=True)
 
             # Share Option
             st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
             st.write("🚀 Share the Summary:")
             share_link = st.text_input("🔗 Copy and Share this Link", value="", key="share_link")
             if st.button("📋 Copy to Clipboard"):
-                pyperclip.copy(translated_summary)
+                pyperclip.copy(truncated_summary)
                 st.write("Copied to clipboard!")
             st.markdown("</div>", unsafe_allow_html=True)
 
