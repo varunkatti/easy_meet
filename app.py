@@ -55,18 +55,6 @@ def is_supported_format(filename):
     _, ext = os.path.splitext(filename)
     return ext in supported_formats
 
-# Function to get the summarized text within the desired length range
-def truncate_summary(summary, min_length, max_length):
-    words = summary.split()
-    truncated_words = words[:max_length]
-    truncated_summary = " ".join(truncated_words)
-
-    # Ensure the truncated summary is at least the minimum length
-    if len(truncated_summary.split()) < min_length:
-        return " ".join(words[:min_length])
-
-    return truncated_summary
-
 # Streamlit UI
 st.title("Multilingual Video Summarizer")
 st.write("Welcome! This is the Multilingual Video Summarizer. You can upload videos in any language (English, Hindi, or Kannada). The audio will be in the selected language, but the summary will be in English.")
@@ -104,16 +92,10 @@ with st.spinner("Generating Summary.."):
 
             st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
             st.write(f"📜 Video Summary ({selected_lang}):")
-            
-            # Adjust the summary length based on user-selected min and max values
-            adjusted_min = min_length
-            adjusted_max = max_length
-            if len(summ.split()) < min_length:
-                adjusted_min = len(summ.split())
-            elif len(summ.split()) > max_length:
-                adjusted_max = len(summ.split())
-            
-            st.write(summ[:adjusted_max])  # Display the adjusted summary
+            st.write(whole_text)
+            st.write("🌟 Translated Summary (English):")
+            translated_summary = get_translated_summary(whole_text, lang_options[selected_lang])
+            st.write(translated_summary)
             st.markdown("</div>", unsafe_allow_html=True)
 
             # Share Option
@@ -121,7 +103,7 @@ with st.spinner("Generating Summary.."):
             st.write("🚀 Share the Summary:")
             share_link = st.text_input("🔗 Copy and Share this Link", value="", key="share_link")
             if st.button("📋 Copy to Clipboard"):
-                pyperclip.copy(summ[:adjusted_max])
+                pyperclip.copy(translated_summary)
                 st.write("Copied to clipboard!")
             st.markdown("</div>", unsafe_allow_html=True)
 
