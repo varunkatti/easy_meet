@@ -48,10 +48,17 @@ def translate_to_english(text, src_lang):
 def get_translated_summary(whole_text, src_lang):
     return translate_to_english(whole_text, src_lang)
 
+# Function to check if a video format is supported
+def is_supported_format(filename):
+    supported_formats = ['.mp4', '.avi', '.mkv']
+    _, ext = os.path.splitext(filename)
+    return ext in supported_formats
+
+# Streamlit UI
 st.title("Multilingual Video Summarizer")
 st.write("Welcome! This is the Multilingual Video Summarizer. You can upload videos in any language (English, Hindi, or Kannada). The audio will be in the selected language, but the summary will be in English.")
 
-video = st.file_uploader("Choose a file", type=['mp4'])
+video = st.file_uploader("Choose a file", type=['mp4', 'avi', 'mkv'])
 button = st.button("Summarize")
 
 # Sidebar with language selection dropdown and max/min slider
@@ -65,37 +72,41 @@ with st.sidebar:
 
 # Summary generation and display
 with st.spinner("Generating Summary.."):
-    if button and video:
-        tfile = tempfile.NamedTemporaryFile(delete=False)
-        tfile.write(video.read())
-        v = VideoFileClip(tfile.name)
-        v.audio.write_audiofile("movie.wav")
-        st.audio("movie.wav")
-        whole_text = get_large_audio_transcription("movie.wav", language=lang_options[selected_lang])
+    if button:
+        if not video:
+            st.error("Please upload a video before clicking the 'Summarize' button.")
+        elif not is_supported_format(video.name):
+            st.error("Unsupported video format. Supported formats: .mp4, .avi, .mkv")
+        else:
+            tfile = tempfile.NamedTemporaryFile(delete=False)
+            tfile.write(video.read())
+            v = VideoFileClip(tfile.name)
+            v.audio.write_audiofile("movie.wav")
+            st.audio("movie.wav")
+            whole_text = get_large_audio_transcription("movie.wav", language=lang_options[selected_lang])
 
-        summarizer = pipeline("summarization", model="t5-small", tokenizer="t5-small", framework="pt")
-        summarized = summarizer(whole_text, min_length=min, max_length=max, do_sample=False)
-        summ = summarized[0]['summary_text']
+            summarizer = pipeline("summarization", model="t5-small", tokenizer="t5-small", framework="pt")
+            summarized = summarizer(whole_text, min_length=min, max_length=max, do_sample=False)
+            summ = summarized[0]['summary_text']
 
-        st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
-        st.write(f"📜 Video Summary ({selected_lang}):")
-        st.write(whole_text)
-        st.write("🌟 Translated Summary (English):")
-        translated_summary = get_translated_summary(whole_text, lang_options[selected_lang])
-        st.write(translated_summary)
-        st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
+            st.write(f"📜 Video Summary ({selected_lang}):")
+            st.write(whole_text)
+            st.write("🌟 Translated Summary (English):")
+            translated_summary = get_translated_summary(whole_text, lang_options[selected_lang])
+            st.write(translated_summary)
+            st.markdown("</div>", unsafe_allow_html=True)
 
-        # Share Option
-        st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
-        st.write("🚀 Share the Summary:")
-        share_link = st.text_input("🔗 Copy and Share this Link", value="", key="share_link")
-        if st.button("📋 Copy to Clipboard"):
-            pyperclip.copy(translated_summary)
-            st.write("Copied to clipboard!")
-        st.markdown("</div>", unsafe_allow_html=True)
+            # Share Option
+            st.markdown("<div class='summary-container'>", unsafe_allow_html=True)
+            st.write("🚀 Share the Summary:")
+            share_link = st.text_input("🔗 Copy and Share this Link", value="", key="share_link")
+            if st.button("📋 Copy to Clipboard"):
+                pyperclip.copy(translated_summary)
+                st.write("Copied to clipboard!")
+            st.markdown("</div>", unsafe_allow_html=True)
 
 # Footer
 st.markdown("<div class='footer'>", unsafe_allow_html=True)
 st.write("Developed by Vinuta. Varun")
 st.markdown("</div>", unsafe_allow_html=True)
-
